@@ -1,6 +1,8 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
+
 import express from 'express'
+
 import { product } from '../Routes/product.js'
 import { cart } from '../Routes/cart.js'
 
@@ -21,5 +23,6 @@ app.use('*', (req, res) => {
             method: `${req.method} resource does not exist`
         })
 });
+
 
 app.listen(process.env.PORT ?? PORT, () => console.log(`Running in PORT ${PORT}`))

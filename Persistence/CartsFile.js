@@ -34,7 +34,7 @@ class CartsFile {
         return carts.find(cart => cart.id == id)
     }
 
-    addProduct = async (product, cart) => {
+    addProduct = async (id, product, cart) => {
         const { products } = cart
         // console.log(products)
         products.push(product)

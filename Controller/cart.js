@@ -1,51 +1,48 @@
-import { CartsFile } from '../Persistence/CartsFile.js'
-import { ProductsFile } from '../Persistence/ProductsFile.js'
+// import { CartsFile } from '../Persistence/CartsFile.js'
+// import { ProductsFile } from '../Persistence/ProductsFile.js'
+
+import { productDAOS, cartDAOS } from '../DAOs/index.js' 
 
 const CController = {
     createCart : async (req, res) =>{
-        const cartsFile = new CartsFile()
-        const carts = await cartsFile.getAllCarts()
-        const cart = await cartsFile.createCart(carts)
-        res.status(201).send({"id": cart.id})
+        const cart = await cartDAOS.createCart()
+        res.status(201).send({"id": cart._id})
     },
     addProduct: async (req, res) => {
         const { id } = req.params
-        const productsFile = new ProductsFile()
         
-        const products = await productsFile.allProductsFromFile()
+        const products = await productDAOS.allProductsFromFile()
         if (products.length == 0) {
             res.status(404).send({message: 'products empty'})
             return
         }
         const { id_prod } = req.body 
-        const product = await productsFile.findByOne(id_prod, products)
+        const product = await productDAOS.findByOne(id_prod)
         if (!product) {
             res.status(404).send({message: 'product not found'})
             return
         }
-        const cartsFile = new CartsFile()
-        const allCarts = await cartsFile.getAllCarts()
+        const allCarts = await cartDAOS.getAllCarts()
         /*Verificar si existen carritos*/
         if (allCarts.length == 0) {
             res.status(400).send({message: 'carts empty'})
         }
 
         /*Busca carrito por id*/
-        const cart = await cartsFile.findByid(id, allCarts)
+        const cart = await cartDAOS.findByid(id)
         if (!cart) {
             res.status(404).json({message: 'cart not found'})
             return
         }
         /**Agrega el producto al carrito encontrado */
-        const cartUpdated = await cartsFile.addProduct(product, cart)
-        await cartsFile.updateCart(id, cartUpdated, allCarts)
-        res.send(cartUpdated)
+        console.log(`carrito ${id}`, cart)
+        const cartUpdated = await cartDAOS.addProd(id, product, cart)
+        // console.log(cartUpdated)
+        res.status(200).send(cartUpdated)
     },
     allProductsFromCart: async (req, res) => {
         const { id } = req.params
-        const cartsFile = new CartsFile()
-        const carts = await cartsFile.getAllCarts()
-        const productsCart = await cartsFile.listProductsByCart(id, carts)
+        const productsCart = await cartDAOS.listProductsByCart(id)
         if (!productsCart) {
             res.status(400).json({message: 'cart not found'})
             return
@@ -54,23 +51,22 @@ const CController = {
     },
     deleteProductFromCart: async (req, res) => {
         const { id, id_prod} = req.params
-        const cartsFile = new CartsFile()
         
-        const carts = await cartsFile.getAllCarts() 
+        const carts = await cartDAOS.getAllCarts() 
         if (carts.length == 0) {
             res.status(404).json({message: 'no carts'})
             return
         }
 
-        const cart = await cartsFile.findByid(id, carts)
+        // console.log(carts.products)
+        const cart = await cartDAOS.findByid(id)
         if (cart.products.length == 0) {
             res.status(404).json({message: 'cart without products'})
             return
         }
-
-        console.log(cart.products) 
-        console.log(id_prod)
-        const deleted = await cartsFile.deleteProductFromCart(id_prod, cart.products, id, carts)
+        
+        const deleted = await cartDAOS.deleteProductFromCart(id, id_prod)
+        console.log(deleted)
         if (!deleted) {
             res.status(400).send({message: 'Error deleted process'})
             return
@@ -79,17 +75,20 @@ const CController = {
     },
     emptyCart: async (req, res) => {
         const { id } = req.params
-        const cartsFile = new CartsFile()
-        const carts = await cartsFile.getAllCarts()
+        // const cartsFile = new CartsFile()
+        const carts = await cartDAOS.getAllCarts()
         if (carts.length == 0) {
             res.status(404).send({message: 'carts empty'})
             return
         }
-        const deleted = await cartsFile.deleteByOne(id, carts)
-        if (!deleted) {
+
+        const cart = await cartDAOS.fByid(id)
+        if (!cart) {
             res.status(404).json({message: 'cart not found'})
             return
         }
+
+       await cartDAOS.deleteByOne(id)
         res.sendStatus(204)
     }
 }

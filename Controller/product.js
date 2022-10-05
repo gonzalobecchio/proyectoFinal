@@ -1,14 +1,18 @@
-import { ProductsFile } from '../Persistence/ProductsFile.js'
+// import { ProductsFile } from '../Persistence/ProductsFile.js'
+import { productDAOS } from '../DAOs/index.js' 
 
 const PController = {
     findProducts: async (req, res) => {
-        const fileProduct = new ProductsFile()
-        const products = await fileProduct.allProductsFromFile()
+        // const fileProduct = new ProductsFile()
+        // const products = await fileProduct.allProductsFromFile()
+        const products = await productDAOS.getAll()
+        // console.log(products)
         /*En caso de existir productos*/
         if (products) {
             const { id } = req.params
             if (id) {
-                const product = await fileProduct.findByOne(id, products)
+                // const product = await fileProduct.findByOne(id, products)
+                const product = await productDAOS.findByOne(id)
                 if (product) {
                     res.status(200).send(product)
                     return
@@ -21,26 +25,20 @@ const PController = {
         }
         res.status(200).json([{ message: 'no products found' }])
     },
-    createProducts: async (req, res) => {
-        const fileProduct = new ProductsFile()
-        const products = await fileProduct.allProductsFromFile()
+    createProducts: async (req, res) => {        
+        const products = await productDAOS.getAll()
         const product = {... req.body}
-        product.id = products.length === 0 ? 1 : products.length + 1
-        product.timestamp = Date.now() 
-        fileProduct.save(product)
+        product._id = products.length === 0 ? 1 : products.length + 1
+        productDAOS.save(product)
         res.status(201).send(product)
     },
     updateProducts: async (req, res) => {
         const { id } = req.params
         const { body } = req
-        const fileProduct = new ProductsFile()
-        const products = await fileProduct.allProductsFromFile()
-        /*Cuando el producto no se encuentra informa y corta la secuencia de pasos*/
-        const product  = await fileProduct.findByOne(id, products)
+        const product  = await productDAOS.findByOne(id)
+        console.log(product)
         if (product) {
-            // const newProduct = {...product, ...body}
-            // console.log(product)
-            const updated  = await fileProduct.updateByOne(id, {...product, ...body})
+            const updated  = await productDAOS.uByOne(id, {...product, ...body})
             res.status(200).send(updated)
             return   
         }
@@ -48,11 +46,9 @@ const PController = {
     },
     deleteProduct: async (req, res) => {
         const { id } = req.params
-        const fileProduct = new ProductsFile()
-        const products = await fileProduct.allProductsFromFile()
-        const product  = await fileProduct.findByOne(id, products)
+        const product  = await productDAOS.findByOne(id)
         if (product) {
-            const d = await fileProduct.deleteByOne(id)
+            const d = await productDAOS.dByOne(id)
             res.status(204).send(d)
             return   
         }
