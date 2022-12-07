@@ -26,7 +26,7 @@ const Middlewares = {
             if (isNaN(price)) arrayErr.push({'price-field': `price isn't a number`})
             if (!stock) arrayErr.push({'stock-field': 'stock field empty'})
             if (isNaN(stock)) arrayErr.push({'stock-field': `stock isn't a number`})
-            if (!Number.isInteger(stock)) arrayErr-push({'stock-field': `stock isn't a integer`})
+            if (!Number.isInteger(stock)) arrayErr.push({'stock-field': `stock isn't a integer`})
     
             if (arrayErr.length) {
                 res.send(arrayErr)
@@ -39,11 +39,15 @@ const Middlewares = {
     },
     admin : (req, res, next) => {
         if (!isAdmin) {
-            res.status(401).json({error: -1, description: `${req.path}` , method: `${req.method} Unauthorize`})
+            res.status(401).json({
+                error: -1, 
+                description: `${req.path}` , 
+                method: `${req.method} Unauthorize`
+            })
             return
         }
         next()
-    }
+    },
 }
 
 export { Middlewares } 

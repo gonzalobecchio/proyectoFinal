@@ -1,0 +1,57 @@
+<div class="d-flex justify-content-between" style="background-color: #e056fd;">
+    {{!-- {{ products }} --}}
+    <div class="d-flex flex-row">
+        <div class="p-3">
+            <img src="https://cdn4.iconfinder.com/data/icons/social-media-2070/140/_shopify-1024.png" alt="" width="35"
+                height="35">
+            <a href="" class="text-decoration-none">Ecommerce</a>
+        </div>
+    </div>
+    <div class="d-flex flex-row">
+        <div class="p-3">
+            <a href="" class="text-decoration-none text-white">
+                {{ user.email }}
+            </a>
+            <img src="../uploads/{{ user.file }}" alt="" width="35" height="35">
+        </div>
+        <div class="p-3">
+            <a href="" class="text-decoration-none text-white">carrito (0) </a>
+        </div>
+        <div class="p-3">
+            <a href="/api/profile" class="text-decoration-none text-white">profile</a>
+        </div>
+        <div class="p-3">
+            <a href="/api/logout" class="text-decoration-none text-white">logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5">
+    <h3 class="text-uppercase">Productos</h3>
+    <div class="row row-cols-3 text-center mt-4">
+        {{#each products}}
+            {{!-- PRODUCT CARD --}}
+            <div class="col-md-4">
+                <div class="card mb-3 p-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ picture }}" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ name }}</h5>
+                                <p class="card-text">{{ description }}</p>
+                                <p class="card-text">$ {{ price }}</p>
+                                <a href="#" class="btn btn-primary text-uppercase">add to cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{!-- PRODUCT CARD --}}
+        {{/each}}
+
+
+
+    </div>
+</div>

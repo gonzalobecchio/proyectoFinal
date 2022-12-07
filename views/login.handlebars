@@ -1,0 +1,23 @@
+<div class="m-0 vh-100 row justify-content-center align-items-center">
+    <div class="col-md-6 p-0 text-start border bg-white">
+       <div class="mb-3 fs-3 text-center bg-secondary ">
+            <div class="mt-0 bg-primary opacity-50 p-2 text-white" id="forms">LOGIN</div>
+       </div>
+       <div class="p-3">
+           <form id="form" action="/api/login" method="POST">
+                <div class="mb-3">
+                    <label for="email">Email *</label>
+                    <input type="email" class="form-control mt-2" name="email" id="email">
+                </div>
+                <div class="mb-3">
+                    <label for="password">Password *</label>
+                    <input type="text" class="form-control mt-2" name="password" id="password">
+                </div>
+                <input type="submit" class="btn w-100 text-uppercase text-white"  style="background-color: #27ae60;" value="login">
+           </form>
+           <div class="text-center text-uppercase mt-3">
+                <a href="/api/register" class="btn bg-primary w-100 text-uppercase text-decoration-none  text-white">go to register</a>
+           </div> 
+       </div>
+    </div>
+</div>

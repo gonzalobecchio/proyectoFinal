@@ -10,8 +10,8 @@ class CartsDAOsMongoDB extends ContainerMongoDB{
         this.getAllCarts()
     }
 
-    createCart = async () => {
-        return this.create()
+    createCart = async (_id) => {
+        return this.create(_id)
     }
 
     findByid = async (_id) => {
@@ -36,6 +36,14 @@ class CartsDAOsMongoDB extends ContainerMongoDB{
     
     listProductsByCart = async (_id) => {
         return await this.listProducts(_id)
+    }
+
+    cartUserLoggin = async ( _id ) => {
+        return await this.fByUserLogin(_id)
+    }
+
+    cartDeleteByUserLog = async (user_id) => {
+        return await this.dByUserLogin(user_id)
     }
 
 }

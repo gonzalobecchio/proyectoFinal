@@ -18,12 +18,13 @@ class ContainerMongoDB {
         return await Cart.find({})
     }
 
-    create = async () => {
+    create = async (_id) => {
         try {
             const carts = await this.getAllCarts()
             const cart = {}
             cart.products = []
             cart._id = carts.length == 0 ?  1 : carts.length + 1
+            cart.user_id = _id
             const newCart = new Cart(cart)
             newCart.save()            
             return cart
@@ -35,6 +36,11 @@ class ContainerMongoDB {
     /*find by id*/ 
     fByid = async (_id) => {
         return await Cart.findById({_id}).exec()
+    }
+
+    /*Retorna el carrito del usuario logeado*/ 
+    fByUserLogin = async (user_id) => {
+        return await Cart.findOne({ user_id })
     }
 
     addProduct = async (_id, product, cart) => {
@@ -84,6 +90,10 @@ class ContainerMongoDB {
         return await Cart.findById({_id})
     }
 
+    dByUserLogin = async (user_id) => {
+        return Cart.deleteByOne({'user_id' : user_id })
+    }
+
 
 
     /***********************Metodos de Productos****************************/ 
@@ -92,7 +102,7 @@ class ContainerMongoDB {
 
     allProductsFromFile = async () => {
         try {
-            return await Product.find()
+            return await Product.find().lean()
         } catch (error) { console.log(error)}
     }
 
@@ -124,6 +134,9 @@ class ContainerMongoDB {
             console.log(error)
         }
     }
+
+
+    /*****************************Métodos de Auth*********************************** */
 
 }
 

@@ -6,6 +6,9 @@ const Cart = new mongoose.model('Cart', new Schema({
         type: 'Number',
         required: true,
     },
+    user_id: {
+        type: 'Number',
+    },
     products: {
         type: Schema.Types.Mixed
     },

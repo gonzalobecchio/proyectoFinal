@@ -2,7 +2,6 @@ import { Router } from 'express'
 import { Middlewares } from '../Middlewares/middlewares.js'
 import { PController } from '../Controller/product.js'
 
-
 const product = Router()
 
 /*

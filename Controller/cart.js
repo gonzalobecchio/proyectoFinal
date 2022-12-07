@@ -1,11 +1,23 @@
 // import { CartsFile } from '../Persistence/CartsFile.js'
 // import { ProductsFile } from '../Persistence/ProductsFile.js'
 
+import NodeMailer from '../Emails/NodeMailer.js'
+import Message from '../Messages/Message.js'
 import { productDAOS, cartDAOS } from '../DAOs/index.js' 
 
 const CController = {
     createCart : async (req, res) =>{
-        const cart = await cartDAOS.createCart()
+        if (!req.isAuthenticated()) {
+            res.status(401).json({message: `Unauthorized`})
+            return
+        }
+        
+        /*Obtenemos el id del usuario logueado*/ 
+        const { _id } = req.user
+        /*Hacemos busqueda del carrito del usuario*/
+        const cartFound = await cartDAOS.cartUserLoggin( _id )
+
+        const cart =  cartFound  ?? await cartDAOS.createCart( _id )
         res.status(201).send({"id": cart._id})
     },
     addProduct: async (req, res) => {
@@ -90,6 +102,76 @@ const CController = {
 
        await cartDAOS.deleteByOne(id)
         res.sendStatus(204)
+    },
+    sendCart: async (req, res) => {
+        if (!req.isAuthenticated()) {
+            res.status(401).send({message: 'Unauthorized'})
+            return
+        }
+        const { user } = req
+        const cartLogin = await cartDAOS.cartUserLoggin(user._id)
+        if (!cartLogin) {
+            res.status(404).send(`User without cart`)
+            return
+        }
+        const { products } = cartLogin
+        
+        let template = `<div>`
+        products.forEach(product => {
+            template += `
+                    <div>
+                        <div>
+                            <label><b>Name:</b> ${product.name}</label> 
+                        </div>
+                        <div>
+                            <label><b>Description:</b> ${product.description}</label> 
+                        </div> 
+                        <div>
+                            <label><b>Code:</b> ${product.code}</label> 
+                        </div>
+                        <div>
+                            <label><b>Price:</b> ${product.price}</label> 
+                        </div> 
+                        <div>
+                            <img src="${product.picture}" alt="MDN" height=150 width=150>
+                        </div>
+                    </div>
+                    <hr>
+            `
+        })
+
+                
+        const from = process.env.ADMIN_EMAIL
+        const to = process.env.ADMIN_EMAIL
+        const subject = `New Order to ${user.name} - ${user.email}`
+        const html = template
+
+        /*Configuracon Envio de Email*/ 
+        const options = {
+            from,
+            to,
+            subject,
+            html
+        }
+        
+        /*Configuracon Envio de Whatsapp*/ 
+        const opt = {
+            body : `New Order to ${user.name} - ${user.email}`,
+            to : user.phone
+        }
+
+        const mail = new NodeMailer(options)
+        const message = new Message(opt)
+
+        await mail.send()
+        
+        message.sendSMS()
+        message.sendWhatsapp()
+
+        cartDAOS.user_id(user.user_id)
+        res.status(200).json({
+            message: `Cart send and deleted`
+        })
     }
 }
 

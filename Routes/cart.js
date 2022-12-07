@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { Middlewares } from '../Middlewares/middlewares.js'
 import { CController } from '../Controller/cart.js'
 
+
 const cart = Router()
 
 /**
@@ -28,5 +29,7 @@ cart.delete('/cart/:id/products/:id_prod', CController.deleteProductFromCart)
  * Eliminar carrito
  */
 cart.delete('/cart/:id', Middlewares.admin, CController.emptyCart)
+
+cart.post('/cart/send', CController.sendCart)
 
 export { cart }
